@@ -19,8 +19,8 @@ Run using the filepath to your ROM:
 
 ## References
 
-- (Game Boy: Complete Technical Reference)[https://gekkio.fi/files/gb-docs/gbctr.pdf]
+- [Game Boy: Complete Technical Reference]( https://gekkio.fi/files/gb-docs/gbctr.pdf )
 
-- (Pan Docs)[https://gbdev.io/pandocs]
+- [Pan Docs](https://gbdev.io/pandocs)
 
-- (gbops, an accurate opcode table for the Game Boy)[https://izik1.github.io/gbops/]
+- [gbops, an accurate opcode table for the Game Boy](https://izik1.github.io/gbops/)
