@@ -1,6 +1,8 @@
 project(lameboy)
 cmake_minimum_required(VERSION 3.15)
 
-add_executable(lameboy src/main.cpp)
-target_compile_options(lameboy PUBLIC -Wall -std=c++20 )
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_executable(lameboy src/main.cpp src/cartridge)
+target_compile_options(lameboy PUBLIC -O3 -Wall -std=c++20 )
 
