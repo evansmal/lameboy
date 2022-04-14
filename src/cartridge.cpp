@@ -1,6 +1,5 @@
 
 #include <fstream>
-#include <iostream>
 #include <vector>
 
 #include "cartridge.hpp"
@@ -19,21 +18,9 @@ const unsigned int TITLE_LENGTH = 16;
 
 const unsigned int CARTIDGE_TYPE_START = 0x0147;
 
-const unsigned int HEADER_CHECKSUM_START = 0x014d;
-
 const unsigned int CHECKSUM_START = 0x0134;
 const unsigned int CHECKSUM_END = 0x014c;
 const unsigned int CHECKSUM_ACTUAL_START = 0x014d;
-
-template <size_t N>
-void PrintBuffer(std::array<Byte, N> &buffer)
-{
-    for (const auto &b : buffer)
-    {
-        std::cout << std::hex << int(b) << " ";
-    }
-    std::cout << std::endl;
-}
 
 template <size_t N>
 void Copy(const std::vector<Byte> &src, std::array<Byte, N> dst, unsigned int pos)
