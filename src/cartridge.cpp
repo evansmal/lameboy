@@ -1,5 +1,6 @@
 
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 #include "cartridge.hpp"
@@ -23,9 +24,9 @@ const unsigned int CHECKSUM_END = 0x014c;
 const unsigned int CHECKSUM_ACTUAL_START = 0x014d;
 
 template <size_t N>
-void Copy(const std::vector<Byte> &src, std::array<Byte, N> dst, unsigned int pos)
+void Copy(const std::vector<Byte> &src, std::array<Byte, N> &dst, unsigned int pos)
 {
-    std::copy(src.cbegin() + pos, src.begin() + pos + N, dst.begin());
+    std::copy(src.cbegin() + pos, src.cbegin() + pos + N, dst.begin());
 }
 
 std::string ToString(const std::vector<Byte> &src, unsigned int pos, unsigned int len)
@@ -48,7 +49,8 @@ Cartridge LoadCartridge(const std::string &filepath)
     const auto file = LoadBinaryFile(filepath);
 
     Cartridge cartridge{};
-    Copy(file, cartridge.entrpoint, ENTRYPOINT_START);
+    cartridge.logo = {};
+    Copy(file, cartridge.entrypoint, ENTRYPOINT_START);
     Copy(file, cartridge.logo, LOGO_START);
 
     cartridge.title = ToString(file, TITLE_START, TITLE_LENGTH);
@@ -57,10 +59,7 @@ Cartridge LoadCartridge(const std::string &filepath)
 
     cartridge.checksum = {ComputeHeaderChecksum(file), file[CHECKSUM_ACTUAL_START]};
 
-    std::cout << cartridge.title << std::endl;
-    std::cout << int(cartridge.type) << std::endl;
-    std::cout << int(cartridge.checksum.actual) << " " << int(cartridge.checksum.computed) << " "
-              << cartridge.checksum.Passed() << std::endl;
+    Copy(file, cartridge.rom, 0);
 
     return cartridge;
 }

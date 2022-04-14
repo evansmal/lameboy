@@ -7,6 +7,7 @@
 
 const unsigned int ENTRYPOINT_LENGTH = 4;
 const unsigned int LOGO_LENGTH = 48;
+const unsigned int MAX_ROM_SIZE = 0x10000;
 
 enum class CartridgeType : uint16_t
 {
@@ -26,11 +27,12 @@ struct HeaderChecksum
 
 struct Cartridge
 {
-    std::array<Byte, ENTRYPOINT_LENGTH> entrpoint;
+    std::array<Byte, ENTRYPOINT_LENGTH> entrypoint;
     std::array<Byte, LOGO_LENGTH> logo;
     std::string title;
     CartridgeType type;
     HeaderChecksum checksum;
+    std::array<Byte, MAX_ROM_SIZE> rom;
 };
 
 Cartridge LoadCartridge(const std::string &filepath);
