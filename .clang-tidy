@@ -1,4 +1,5 @@
 Checks: 'readability-identifier-naming, misc-*, modernize-*, -modernize-use-override, clang-analyzer-*, performance-*, portability-*, bugprone-*, cppcoreguidelines-*, -cppcoreguidelines-non-private-member-variables-in-classes, -cppcoreguidelines-owning-memory, -cppcoreguidelines-pro-*,
+-cppcoreguidelines-macro-usage, 
 -misc-definitions-in-headers,-modernize-use-trailing-return-type, -misc-non-private-member-variables-in-classes, -bugprone-easily-swappable-parameters'
 
 WarningsAsErrors: ''
