@@ -1,6 +1,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "cartridge.hpp"
@@ -10,6 +11,18 @@ static std::vector<Byte> LoadBinaryFile(const std::string &filepath)
     std::ifstream file(filepath, std::ifstream::binary);
     return {std::istreambuf_iterator<char>(file), {}};
 }
+
+template <size_t N>
+void Copy(const std::vector<Byte> &src, std::array<Byte, N> &dst, unsigned int pos)
+{
+    std::copy(src.cbegin() + pos, src.cbegin() + pos + N, dst.begin());
+}
+
+std::string ToString(const std::vector<Byte> &src, unsigned int pos, unsigned int len)
+{
+    return {src.cbegin() + pos, src.cbegin() + pos + len};
+}
+
 const unsigned int ENTRYPOINT_START = 0x0100;
 
 const unsigned int LOGO_START = 0x0104;
@@ -22,17 +35,6 @@ const unsigned int CARTIDGE_TYPE_START = 0x0147;
 const unsigned int CHECKSUM_START = 0x0134;
 const unsigned int CHECKSUM_END = 0x014c;
 const unsigned int CHECKSUM_ACTUAL_START = 0x014d;
-
-template <size_t N>
-void Copy(const std::vector<Byte> &src, std::array<Byte, N> &dst, unsigned int pos)
-{
-    std::copy(src.cbegin() + pos, src.cbegin() + pos + N, dst.begin());
-}
-
-std::string ToString(const std::vector<Byte> &src, unsigned int pos, unsigned int len)
-{
-    return {src.cbegin() + pos, src.cbegin() + pos + len};
-}
 
 uint8_t ComputeHeaderChecksum(const std::vector<Byte> &file)
 {
@@ -48,6 +50,8 @@ Cartridge LoadCartridge(const std::string &filepath)
 {
     const auto file = LoadBinaryFile(filepath);
 
+    std::cout << file.size() << std::endl;
+
     Cartridge cartridge{};
     cartridge.logo = {};
     Copy(file, cartridge.entrypoint, ENTRYPOINT_START);
@@ -62,4 +66,14 @@ Cartridge LoadCartridge(const std::string &filepath)
     Copy(file, cartridge.rom, 0);
 
     return cartridge;
+}
+
+std::string GetInfo(const Cartridge &cartridge)
+{
+    std::stringstream ss;
+    ss << "Game title: " << cartridge.title << std::endl;
+    ss << "Cartridge type: " << int(cartridge.type) << std::endl;
+    ss << "Checksum: " << int(cartridge.checksum.actual) << " " << int(cartridge.checksum.computed)
+       << " " << cartridge.checksum.Passed();
+    return ss.str();
 }

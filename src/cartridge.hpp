@@ -36,3 +36,6 @@ struct Cartridge
 };
 
 Cartridge LoadCartridge(const std::string &filepath);
+
+std::string GetInfo(const Cartridge &cartridge);
+
