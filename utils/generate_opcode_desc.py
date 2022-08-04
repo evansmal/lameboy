@@ -2,12 +2,29 @@ import argparse
 import json
 
 
-def to_string(opcode, op):
-    """
-    Generate a string that we can use in the C++ code.
-    For example: ADD_DESCRIPTION(0x00, "JP", 1, 4),
-    """
+def to_desc_string(opcode, op):
     return f'ADD_DESCRIPTION({hex(opcode)}, "{op["Name"]}", {op["Length"]}, {op["TCyclesBranch"]})'
+
+def generate_map(ops):
+    res = '#define ADD_DESCRIPTION(code, name, length, cycles) {{code}, { code, name, length, cycles }}\n\n'
+    res += 'const std::map<Byte, InstructionDescription> INSTRUCTION_REGISTRY = {'
+    for i, op in enumerate(ops):
+        res += f'    {to_desc_string(i, op)},\n'
+    res += '};'
+    return res
+
+def to_enum_string(opcode, op):
+    name = str(op["Name"]).upper().replace(" ", "_").replace(",", "_").replace("(", "V").replace(")", "").replace("+", "PLUS").replace("-", "X")
+    return f'{name} = {hex(opcode)}'
+
+def generate_list(ops):
+    res = 'enum OpCode {\n'
+    for i, op in enumerate(ops):
+        if op["Name"] != "UNUSED":
+            res += f'    {to_enum_string(i, op)},\n'
+    res += '};'
+    return res
+
 
 def main():
     parser = argparse.ArgumentParser(description="This script can be \
@@ -27,13 +44,8 @@ def main():
         prefixed = json_data["CBPrefixed"]
 
         res = '#pragma once\n\n#include "decoder.hpp"\n#include <map>\n\n'
-        res += '#define ADD_DESCRIPTION(code, name, length, cycles) {{code}, { code, name, length, cycles }}\n\n'
-        res += 'namespace lb::decoder {\n\n'
-        res += 'const std::map<Byte, InstructionDescription> INSTRUCTION_REGISTRY = {'
-        for i, op in enumerate(unprefixed):
-            res += f'\t{to_string(i, op)},\n'
-        res += '};\n\n'
-        res += '}\n'
+        res += generate_list(unprefixed) + "\n\n"
+        res += generate_map(unprefixed) + "\n\n"
 
         print(res)
 

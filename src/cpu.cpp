@@ -1,26 +1,19 @@
 #include "cpu.hpp"
+#include "decoder.hpp"
+#include "types.hpp"
 
-uint16_t GetU16(Byte const *const buffer)
+uint16_t GetU16(const Operands &operands, int offset = 0)
 {
-    uint8_t lower = buffer[0];
-    uint16_t upper = buffer[1];
+    uint8_t lower = operands[offset + 0];
+    uint16_t upper = operands[offset + 1];
     return ((upper << 8) | lower);
 }
 
 Instruction Fetch(const CPU &cpu, const Cartridge &cartridge)
 {
-    uint8_t opcode = cartridge.rom[cpu.registers.pc];
-    switch (opcode)
-    {
-    case OpCode::NOP: {
-        return nop{};
-    }
-    case OpCode::JP: {
-        return jp{GetU16(&cartridge.rom[cpu.registers.pc + 1])};
-    }
-    default:
-        throw std::runtime_error("Could not decode instruction at " + ToHex(opcode));
-    }
+    Byte const *const opcode = &cartridge.rom[cpu.registers.pc];
+    std::cout << ToString(Decode(opcode)) << std::endl;
+    return Decode(opcode);
 }
 
 void Run(const Cartridge &cartridge)
@@ -31,18 +24,20 @@ void Run(const Cartridge &cartridge)
     while (true)
     {
         const Instruction instruction = Fetch(cpu, cartridge);
-        if (std::holds_alternative<nop>(instruction))
+        switch (instruction.opcode)
         {
+        case 0x00: {
             cpu.registers.pc++;
+            break;
         }
-        else if (std::holds_alternative<jp>(instruction))
-        {
-            const auto &jump = std::get<jp>(instruction);
-            cpu.registers.pc = jump.dst;
+        case 0xc3: {
+            const uint16_t dst = GetU16(instruction.operands);
+            cpu.registers.pc = dst;
+            break;
         }
-        else
-        {
-            throw std::runtime_error("Invalid instruction type encountered");
+        default: {
+            throw std::runtime_error("Invalid instruction type encountered: " + ToHex(instruction.opcode));
+        }
         }
     }
 }
