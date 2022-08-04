@@ -18,6 +18,14 @@ Run using the filepath to your ROM:
 ./build/lameboy <rom_filepath>
 ```
 
+## Generating `instructions.hpp`
+
+We use the JSON description from [this project](https://izik1.github.io/gbops/) to code generate a header containing all of the opcodes to avoid maintaining this manually. To regenerate this header, download the JSON source locally and run the following command:
+
+```sh
+python3 utils/generate_opcode_desc.py ops.json > src/instructions.cpp
+```
+
 ## References
 
 - [Game Boy: Complete Technical Reference]( https://gekkio.fi/files/gb-docs/gbctr.pdf )
